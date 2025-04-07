@@ -71,6 +71,7 @@ struct nnSetPatternsFromFilesParms
 	long long nnet;
 	int n;
 	int m;
+	int norm_type;
 	char* f1;
 	char* f2;
 };
@@ -102,7 +103,7 @@ struct nnSaveParms
 struct nnWriteFileBlockParms
 {
 	int filesize;
-	int qnt;
+	int blockqnt;
 	int blockno;
 	int blocksize;
 	int lastblocksize;

@@ -162,7 +162,7 @@ int main()
 
     CLOSE_OPEN_SOCKET*/
 
-    scl.nnSetPatternsFromFiles(ClientSock, obj, 400 * 5000, 10 * 5000, (char*)"tx.bin", (char*)"ty.bin");
+    scl.nnSetPatternsFromFiles(ClientSock, obj, 400 * 5000, 10 * 5000, NORMALYZE_NO, (char*)"tx.bin", (char*)"ty.bin");
     cout << "nnSetPatternsFromFiles" << endl;
 
     CLOSE_OPEN_SOCKET

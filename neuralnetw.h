@@ -11,8 +11,7 @@
 #include "assert.h"
 #include <complex>
 #include <cstdio>
-#include <thread>
-//#include <pthread.h>
+#include <pthread.h>
 #include "socketxml.h"
 #include "parsexml.h"
 #include "nnobject.h"
@@ -21,12 +20,27 @@
 #define OPTIMIZATION_ASM64 1
 #define OPTIMIZATION_ASM64_XEON 2
 
+#define NORMALYZE_NO 0
+#define NORMALYZE_SIMPLE 1
+
+class NN;
+
 #pragma pack(push, 1)
 struct nnLearnResultParms
 {
 	int iter;
 	int success_qnt;
 	double norma;
+};
+
+struct pthreadData
+{
+	NN* netw;
+	int pqnt_block_no;
+	double lambda;
+	double epsilon;
+	double lambdareg;
+	double nrm;
 };
 #pragma pack(pop)
 
@@ -46,7 +60,7 @@ extern "C" void v8add(long qnt, void* v1, void* v2);
 
 extern "C" void v8gsum(unsigned long long qnt, void* gsum, void* x, void* delta);
 
-extern "C" void forwbs(unsigned long long qnt, void* z, void* x, void* theta);
+extern "C" void forwbs(int n, int m, void* z, void* x, void* theta);
 
 extern "C" void Matrix8Tran(int n, int m, void* src, void* dest);
 
@@ -92,9 +106,9 @@ public:
 	int tracebufcnt;       //Размер буфера трассировки
 	int* tracebufw;         //Записано в буфер трассировки
 	double* Theta;         //С добавленным столбцом начальных смещений
-	double* ThetaM;        //Без добавленного столбца начальных смещений
+	//double* ThetaM;        //Без добавленного столбца начальных смещений
 	double* ThetaT;
-	double* ThetaMT;
+	//double* ThetaMT;
 	dpoint* Line;
 	dpoint* LineT;
 	double* A;
@@ -163,12 +177,14 @@ public:
 	int in_n, out_n; //К-во входов и выходов сети
 	int nlayers;     //К-во слоев
 	int pqnt;        //К-во обучающих образцов
+	int pqnt_blocks; //К-во блоков обучающих образцов
 	double rand_epsilon;   //Константа для начальной инициализации матриц весов
 	int optimization;
 	char* Tracebuffer;     //Буфер трассировки
 	int tracebufcnt;       //Размер буфера трассировки
 	int *tracebufw;         //Записано в буфер трассировки
 	double J;        //Функция стоимости
+	int* block_size; //Массив размеров блоков
 	double* X;       //Массив размерности pqnt x in_n - входы сети для каждого обучающего образца
 	double* Y;       //Массив размерности pqnt x out_n - выходы сети для каждого обучающего образца
 	double** LineX;  //Массив указателей на строки массива X
@@ -179,16 +195,16 @@ public:
 	NNLayer* Wlast;
 	int nli, nlo;
 
-	NN(int n, int _nlayers, int _pqnt, double _rand_epsilon, int* nout, int _tracebufcnt, char* _tracebuffer, int* _tracebufw, int processorno, int opt);
+	NN(int n, int _nlayers, int _pqnt, int _pqnt_blocks, double _rand_epsilon, int* nout, int _tracebufcnt, char* _tracebuffer, int* _tracebufw, int processorno, int opt);
 
 	~NN();
 
 	//Загрузка pqnt образцов для обучения сети
 	void SetPatterns(double* _X, double* _Y);
 
-	double Propagation(double lambda = 1.0, double epsilon = 0.1, double lambdareg = 0);
+	//double Propagation(double lambda = 1.0, double epsilon = 0.1, double lambdareg = 0);
 
-	double Learn(double lambda = 1.0, double epsilon = 0.1, double lambdareg = 0);
+	double Learn(int pqnt_block_no, double lambda = 1.0, double epsilon = 0.1, double lambdareg = 0);
 
 	void Recognize(double* _X, double* _Y);
 
@@ -204,6 +220,8 @@ public:
 	int nlayers;     //К-во слоев
 	int nthreads;    //К-во потоков
 	int pqnt;        //К-во обучающих образцов
+	int pqnt_blocks; //К-во блоков обучающих образцов
+	int pqnt_block_no; //Номер текущего блока обучающих образцов для алгоритма обучения
 	double rand_epsilon;   //Константа для начальной инициализации матриц весов
 	int optimization;
 	char* Tracebuffer;     //Буфер трассировки
@@ -218,22 +236,27 @@ public:
 	int nli, nlo;
 	NN** parnetw;    //Массив указателей на нейронные сети для параллельных вычислений
 
-	NeuralNetwork(int n, int _nlayers, int _pqnt, int _nthreads, double _rand_epsilon, int* nout, int _tracebufcnt, char* _tracebuffer, int opt);
+	NeuralNetwork(int n, int _nlayers, int _pqnt, int _pqnt_blocks, int _nthreads, double _rand_epsilon, int* nout, int _tracebufcnt, char* _tracebuffer, int opt);
 
 	NeuralNetwork(char* fname, int tbcnt, char* buf, int opt);
 
 	~NeuralNetwork();
 
 	//Загрузка pqnt образцов для обучения сети
-	void SetPatterns(double* _X, double* _Y);
+	void SetPatterns(double* X, double* Y, int norm_type);
 
-	void InpRand();
+	nnLearnResultParms Learn(int maxiter, double lambda = 1.0, double epsilon = 0.1, double lambdareg = 0);
 
-	nnLearnResultParms Learn(int maxiter = 100, double lambda = 1.0, double epsilon = 0.1, double lambdareg = 0);
-
-	void Recognize(double* _X, double* _Y);
+	void Recognize(double* X, double* Y);
 
 	int Save(char* fname);   //Сохранение обученной нейронной сети
+
+	char* GetCurrentDirectory();
+
+	void SetCurrentDirectory(char* dir);
+
+private:
+	void InpRand();
 
 	double UpdateWeights(double h, double r);
 
@@ -247,9 +270,7 @@ public:
 
 	void UpdateLayersWeights(double h, double r);
 
-	char* GetCurrentDirectory();
-
-	void SetCurrentDirectory(char* dir);
+	int GetSumQnt();
 };
 
 template <class Tp> class Matrix
@@ -286,7 +307,7 @@ template <class Tp> Matrix<Tp>& operator/(Matrix<Tp>& M, Tp s);
 template <class Tp> void operator*=(Matrix<Tp>& M, Tp s);
 template <class Tp> void operator/=(Matrix<Tp>& M, Tp s);
 
-void LearnParallel(NN* netw, double lambda, double epsilon, double lambdareg, double* nrm);
+void* LearnParallel(void* dt);
 
 void memmove(char* p1, char* p2, int count);
 

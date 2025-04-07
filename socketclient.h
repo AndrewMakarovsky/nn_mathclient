@@ -45,7 +45,7 @@ public:
 	long long nnLoad(int client, char* fname, int tbcnt, int opt);
 	bool nnDelete(int client, long long nnet);
 	//void nnSetPatterns(int client, long long nnet, int n, int m, double* _X, double* _Y);
-	void nnSetPatternsFromFiles(int client, long long nnet, int n, int m, char* f1, char* f2);
+	void nnSetPatternsFromFiles(int client, long long nnet, int n, int m, int norm_type, char* f1, char* f2);
 	bool nnLearn(int client, long long nnet, int maxiter, double lambda, double epsilon, double lambdareg);
 	bool nnRecognize(int client, long long nnet, int n, int m, double* _X, double* _Y);
 	void nnSave(int client, long long nnet, char* fname);

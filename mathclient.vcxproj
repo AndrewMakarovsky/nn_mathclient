@@ -83,7 +83,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="makefile" />
-    <None Include="startnn.out" />
     <None Include="t1.bin" />
     <None Include="t2.bin" />
   </ItemGroup>

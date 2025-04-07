@@ -338,7 +338,7 @@ void MySocketClient::nnSetPatterns(int client, long long nnet, int n, int m, dou
     //sendBigData(client, (char*)_Y, m * sizeof(double));
 }*/
 
-void MySocketClient::nnSetPatternsFromFiles(int client, long long nnet, int n, int m, char* f1, char* f2)
+void MySocketClient::nnSetPatternsFromFiles(int client, long long nnet, int n, int m, int norm_type, char* f1, char* f2)
 {
     int cmd = nnSetPatternsFromFiles_Function;
     char* xml = new char[1024];
@@ -350,6 +350,7 @@ void MySocketClient::nnSetPatternsFromFiles(int client, long long nnet, int n, i
     cxml.addLong(nnet);
     cxml.addInt(n);
     cxml.addInt(m);
+    cxml.addInt(norm_type);
     cxml.addString(f1);
     cxml.addString(f2);
 
