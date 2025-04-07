@@ -37,12 +37,13 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{131eb723-e7b3-439b-8f18-ce81271b0330}</ProjectGuid>
     <Keyword>Linux</Keyword>
-    <RootNamespace>startnn</RootNamespace>
+    <RootNamespace>mathclient</RootNamespace>
     <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
     <ApplicationType>Linux</ApplicationType>
     <ApplicationTypeRevision>1.0</ApplicationTypeRevision>
     <TargetLinuxPlatform>Generic</TargetLinuxPlatform>
     <LinuxProjectType>{D51BCBC9-82E9-4017-911E-C93873C4EA2B}</LinuxProjectType>
+    <ProjectName>mathclient</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
@@ -78,7 +79,7 @@
     <ClCompile Include="parsexml.cpp" />
     <ClCompile Include="socketclient.cpp" />
     <ClCompile Include="socketxml.cpp" />
-    <ClCompile Include="startnn_linux.cpp" />
+    <ClCompile Include="mathclient.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="makefile" />

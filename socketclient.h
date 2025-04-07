@@ -44,7 +44,7 @@ public:
 	long long nnCreate(int client, int n, int _nlayers, int _pqnt, int _pqnt_blocks, int _nthreads, double _rand_epsilon, int* nout, int _tracebufcnt, int opt);
 	long long nnLoad(int client, char* fname, int tbcnt, int opt);
 	bool nnDelete(int client, long long nnet);
-	void nnSetPatterns(int client, long long nnet, int n, int m, double* _X, double* _Y);
+	//void nnSetPatterns(int client, long long nnet, int n, int m, double* _X, double* _Y);
 	void nnSetPatternsFromFiles(int client, long long nnet, int n, int m, char* f1, char* f2);
 	bool nnLearn(int client, long long nnet, int maxiter, double lambda, double epsilon, double lambdareg);
 	bool nnRecognize(int client, long long nnet, int n, int m, double* _X, double* _Y);

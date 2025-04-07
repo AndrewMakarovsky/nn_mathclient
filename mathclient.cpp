@@ -145,12 +145,12 @@ int main()
 
     CLOSE_OPEN_SOCKET
 
-    /*obj = scl.nnCreate(ClientSock, 400, 3, 5000, 10, 2, 0.12, nout, traceBufCnt, OPTIMIZATION_CPP);
+    obj = scl.nnCreate(ClientSock, 400, 3, 5000, 10, 2, 0.12, nout, traceBufCnt, OPTIMIZATION_CPP);
     cout << "nnCreate" << endl;
 
-    CLOSE_OPEN_SOCKET*/
+    CLOSE_OPEN_SOCKET
 
-    obj = scl.nnLoad(ClientSock, (char*)"nn.dat", traceBufCnt, OPTIMIZATION_ASM64);
+    /*obj = scl.nnLoad(ClientSock, (char*)"nn.dat", traceBufCnt, OPTIMIZATION_ASM64);
 
     CLOSE_OPEN_SOCKET
 
@@ -160,7 +160,7 @@ int main()
         cout << "Error \"" << scl.getDataBuffer() << "\"" << endl;
     }
 
-    CLOSE_OPEN_SOCKET
+    CLOSE_OPEN_SOCKET*/
 
     scl.nnSetPatternsFromFiles(ClientSock, obj, 400 * 5000, 10 * 5000, (char*)"tx.bin", (char*)"ty.bin");
     cout << "nnSetPatternsFromFiles" << endl;
@@ -172,7 +172,7 @@ int main()
     scl.copyFromBuffer((char*)&lrp, sizeof(lrp));
     cout << "nnLearn" << endl;
     cout << "Iterations: " << lrp.iter << ", success: " << lrp.success_qnt << ", norma: " << lrp.norma << endl;
-
+    
     CLOSE_OPEN_SOCKET
 
     /*scl.nnSave(ClientSock, obj, (char*)"nn.dat");

@@ -298,6 +298,7 @@ bool MySocketClient::nnDelete(int client, long long nnet)
 }
 
 //n и m - количество элементов типа double  в массивах _X и _Y
+/*
 void MySocketClient::nnSetPatterns(int client, long long nnet, int n, int m, double* _X, double* _Y)
 {
     int cmd = nnSetPatterns_Function;
@@ -335,7 +336,7 @@ void MySocketClient::nnSetPatterns(int client, long long nnet, int n, int m, dou
 
     //sendBigData(client, (char*)_X, n * sizeof(double));
     //sendBigData(client, (char*)_Y, m * sizeof(double));
-}
+}*/
 
 void MySocketClient::nnSetPatternsFromFiles(int client, long long nnet, int n, int m, char* f1, char* f2)
 {
