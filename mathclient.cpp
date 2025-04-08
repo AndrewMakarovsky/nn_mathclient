@@ -145,7 +145,7 @@ int main()
 
     CLOSE_OPEN_SOCKET
 
-    obj = scl.nnCreate(ClientSock, 400, 3, 5000, 10, 2, 0.12, nout, traceBufCnt, OPTIMIZATION_CPP);
+    obj = scl.nnCreate(ClientSock, 400, 3, 5000, 20, 2, 0.12, nout, traceBufCnt, OPTIMIZATION_CPP);
     cout << "nnCreate" << endl;
 
     CLOSE_OPEN_SOCKET
@@ -164,6 +164,14 @@ int main()
 
     scl.nnSetPatternsFromFiles(ClientSock, obj, 400 * 5000, 10 * 5000, NORMALYZE_NO, (char*)"tx.bin", (char*)"ty.bin");
     cout << "nnSetPatternsFromFiles" << endl;
+
+    CLOSE_OPEN_SOCKET
+
+    int errqnt = scl.getLastError(ClientSock);
+    if (errqnt > 0)
+    {
+        cout << "Error \"" << scl.getDataBuffer() << "\"" << endl;
+    }
 
     CLOSE_OPEN_SOCKET
 
