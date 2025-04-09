@@ -73,7 +73,7 @@ int MySocketClient::receiveBuffer(int client)
     return qnt;
 }
 
-bool MySocketClient::sendBlock(int client, char* buf, int qnt)
+/*bool MySocketClient::sendBlock(int client, char* buf, int qnt)
 {
     int rqnt, rqnt2;
 
@@ -93,9 +93,9 @@ bool MySocketClient::sendBlock(int client, char* buf, int qnt)
     }
 
     return true;
-}
+}*/
 
-void MySocketClient::sendBigData(int client, char* buf, int qnt)
+/*void MySocketClient::sendBigData(int client, char* buf, int qnt)
 {
     char* p = buf;
 
@@ -178,7 +178,7 @@ int MySocketClient::receiveBigData(int client, char* buf)
     }
 
     return qnt;
-}
+}*/
 
 void MySocketClient::copyToBuffer(char* src, int n)
 {
@@ -566,7 +566,7 @@ void MySocketClient::nnWriteFile(int client, char* fn, int n)
     delete[] xml;
 }
 
-int MySocketClient::nnReadFile(int client, long long nnet, char* fn, int n, double* x)
+/*int MySocketClient::nnReadFile(int client, long long nnet, char* fn, int n, double* x)
 {
     int ret = 0;
     char* xml = new char[1024];
@@ -593,7 +593,7 @@ int MySocketClient::nnReadFile(int client, long long nnet, char* fn, int n, doub
     }
 
     return ret;
-}
+}*/
 
 long long MySocketClient::nndpCreate(int client, int _qnt, int _n_in, int _n_out, double* _X)
 {
@@ -607,7 +607,7 @@ long long MySocketClient::nndpCreate(int client, int _qnt, int _n_in, int _n_out
     copyToBuffer(xml, (int)strlength(xml));
     sendBuffer(client, (int)strlength(xml));
 
-    sendBigData(client, (char*)_X, _qnt * _n_in * sizeof(double));
+    //sendBigData(client, (char*)_X, _qnt * _n_in * sizeof(double));
 
     delete[] xml;
 
@@ -657,7 +657,7 @@ void MySocketClient::nndpGetX(int client, long long dp, double* _X)
     sendBuffer(client, (int)strlength(xml));
     delete[] xml;
 
-    cmd = receiveBigData(client, (char*)_X);
+    //cmd = receiveBigData(client, (char*)_X);
 }
 
 double MySocketClient::nndpGetMax(int client, long long dp)
@@ -719,11 +719,11 @@ int MySocketClient::nndpNormalyze(int client, long long dp, int qnt, double* in,
     copyToBuffer(xml, (int)strlength(xml));
     sendBuffer(client, (int)strlength(xml));
 
-    sendBigData(client, (char*)in, qnt);
+    //sendBigData(client, (char*)in, qnt);
 
     delete[] xml;
 
-    cmd = receiveBigData(client, (char*)out);
+    //cmd = receiveBigData(client, (char*)out);
 
     return cmd;
 }
@@ -809,6 +809,6 @@ void MySocketClient::testMySocketServer(int client, char* s)
 
 void MySocketClient::closeMySocketServer(int client)
 {
-    int cmd = testsocketserver_Function;
+    int cmd = closeMySocketServer_Function;
     send(client, (const char*)&cmd, sizeof(int), 0);
 }
