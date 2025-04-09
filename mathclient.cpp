@@ -13,6 +13,11 @@
                            { \
                                return 0; \
                            }
+#define ERROR_MESSAGE_REQUEST errqnt = scl.getLastError(ClientSock); \
+                              if (errqnt > 0) \
+                              { \
+                                  cout << "Error \"" << scl.getDataBuffer() << "\"" << endl; \
+                              }
 
 using namespace std;
 using namespace socketxml;
@@ -47,7 +52,9 @@ void cpy(double* out, double* in, int qnt)
 
 int main()
 {
-    /*ifstream in("t1.bin", ios_base::binary);
+    int errqnt;
+
+    ifstream in("t1.bin", ios_base::binary);
     if (in.is_open())
     {
         in.read((char*)Y1, sizeof(Y1));
@@ -93,7 +100,7 @@ int main()
             mn = X[i];
         }
     }
-    */
+    
 
     MySocketClient scl;
 
@@ -115,9 +122,11 @@ int main()
     cmd = scl.receiveBuffer(ClientSock);
     cout << scl.getDataBuffer() << endl;
 
-    //CLOSE_OPEN_SOCKET
+    //CLOSE_OPEN_SOCKET;
 
-    /*int fsize = 5000 * 400 * sizeof(double);
+    //Копирование на сервер обучающих образцов блоками (на сервере при приёме 1 блока выделяется память для всего массива образцов,
+    // сдедующие блоки копируются в него), запись в файл происходит при вызове ф-ции nnWriteFile, выделенная память освобождается
+    int fsize = 5000 * 400 * sizeof(double);
     int blocksize = 30000;
     int blockqnt = fsize / blocksize;
     int lastblocksize = fsize - blockqnt * blocksize;
@@ -131,24 +140,32 @@ int main()
     }
     for(int blockno = 0; blockno < blockqnt; blockno++)
     {
-        CLOSE_OPEN_SOCKET
+        CLOSE_OPEN_SOCKET;
+        //ERROR_MESSAGE_REQUEST;
+        //CLOSE_OPEN_SOCKET;
 
         scl.nnWriteFileBlock(ClientSock, fsize, blockqnt, blockno, blocksize, lastblocksize, ((char*)X) + blockno * blocksize);
         //scl.skClose(ClientSock);
         cout << "Block" << blockno << endl;
     }
 
-    CLOSE_OPEN_SOCKET
+    CLOSE_OPEN_SOCKET;
+    //ERROR_MESSAGE_REQUEST;
+    //CLOSE_OPEN_SOCKET;
 
     scl.nnWriteFile(ClientSock, (char*)"test.t", fsize);
-    cout << "nnWriteFile" << endl;*/
+    cout << "nnWriteFile" << endl;
 
-    CLOSE_OPEN_SOCKET
+    CLOSE_OPEN_SOCKET;
+    ERROR_MESSAGE_REQUEST;
+    CLOSE_OPEN_SOCKET;
 
     obj = scl.nnCreate(ClientSock, 400, 3, 5000, 20, 2, 0.12, nout, traceBufCnt, OPTIMIZATION_CPP);
     cout << "nnCreate" << endl;
 
-    CLOSE_OPEN_SOCKET
+    CLOSE_OPEN_SOCKET;
+    ERROR_MESSAGE_REQUEST;
+    CLOSE_OPEN_SOCKET;
 
     /*obj = scl.nnLoad(ClientSock, (char*)"nn.dat", traceBufCnt, OPTIMIZATION_ASM64);
 
@@ -166,14 +183,8 @@ int main()
     cout << "nnSetPatternsFromFiles" << endl;
 
     CLOSE_OPEN_SOCKET
-
-    int errqnt = scl.getLastError(ClientSock);
-    if (errqnt > 0)
-    {
-        cout << "Error \"" << scl.getDataBuffer() << "\"" << endl;
-    }
-
-    CLOSE_OPEN_SOCKET
+    ERROR_MESSAGE_REQUEST;
+    CLOSE_OPEN_SOCKET;
 
     nnLearnResultParms lrp;
     scl.nnLearn(ClientSock, obj, 500, 2, 0.02, 0);
@@ -182,15 +193,33 @@ int main()
     cout << "Iterations: " << lrp.iter << ", success: " << lrp.success_qnt << ", norma: " << lrp.norma << endl;
     
     CLOSE_OPEN_SOCKET
+    ERROR_MESSAGE_REQUEST;
+    CLOSE_OPEN_SOCKET;
 
-    /*scl.nnSave(ClientSock, obj, (char*)"nn.dat");
+    scl.nnSave(ClientSock, obj, (char*)"nn.dat");
     cout << "nnSave" << endl;
 
-    CLOSE_OPEN_SOCKET*/
+    CLOSE_OPEN_SOCKET
+    ERROR_MESSAGE_REQUEST;
+    CLOSE_OPEN_SOCKET
 
     scl.nnRecognize(ClientSock, obj, 400, 10, X + 400 * 972, YO);
+    cout << "nnRecognize" << endl;
+    int rec_out = 0;
+    double rec_max = -1;
+    for (int i = 0; i < 10; i++)
+    {
+        if (rec_max < YO[i])
+        {
+            rec_max = YO[i];
+            rec_out = i;
+        }
+    }
+    cout << "Recognize result is " << rec_out << endl;
 
     CLOSE_OPEN_SOCKET
+    ERROR_MESSAGE_REQUEST;
+    CLOSE_OPEN_SOCKET;
 
     /*
     obj = scl.nnLoad(ClientSock, (char*)"nn.dat", traceBufCnt, OPTIMIZATION_ASM64);
@@ -230,7 +259,9 @@ int main()
         cout << "Error deleting neural network" << endl;
     }
 
-    CLOSE_OPEN_SOCKET
+    CLOSE_OPEN_SOCKET;
+    ERROR_MESSAGE_REQUEST;
+    CLOSE_OPEN_SOCKET;
 
     cmd = closeMySocketServer_Function;
     send(ClientSock, (const char*)&cmd, sizeof(int), 0);
